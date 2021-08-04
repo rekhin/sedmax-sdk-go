@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+// See https://www.ibm.com/docs/en/zos-basic-skills?topic=layer-transmission-control-protocol-tcp
+package data;
+
+option go_package = "codec/proto/datapb";
+
+// message Current {
+//     string Tag = 1;
+//     Point Point = 2;
+// }
+
+// message Historical {
+//     string Tag = 1;
+//     repeated Point Points = 2;
+// }
+
+message Series {
+    repeated Set Sets = 1;
+}
+
+message Set {
+    string Tag = 1;
+    repeated Point Points = 2;
+}
+
+message Point {
+    int64 Timestamp = 1;
+    Value Value = 2;
+    uint32 Status = 3;
+}
+
+message Value {
+    oneof Variant {
+        bool Bool = 1;
+        // int32 Int8 = 2; // ?
+        // int32 Int16 = 3; // ?
+        int32 Int32 = 4;
+        int64 Int64 = 5;
+        // uint32 Uint8 = 6; // ?
+        // uint32 Uint16 = 7; // ?
+        uint32 Uint32 = 8;
+        uint64 Uint64 = 9;
+        float Float32 = 10;
+        double Float64 = 11;
+        string String = 12;
+        bytes Bytes = 13;
+        Object Object = 14;
+        Array Array = 15;
+    }
+}
+
+message Object {
+    map<string, Value> ValueByName = 1;
+}
+
+message Array {
+    repeated bool BoolArray = 1;
+    // repeated int32 Int8Array = 2; // ?
+    // repeated int32 Int16Array = 3; // ?
+    repeated int32 Int32Array = 4;
+    repeated int64 Int64Array = 5;
+    // repeated uint32 Uint8Array = 6; // ?
+    // repeated uint32 Uint16Array = 7; // ?
+    repeated uint32 Uint32Array = 8;
+    repeated uint64 Uint64Array = 9;
+    repeated float Float32Array = 10;
+    repeated double Float64Array = 11;
+    repeated string StringArray = 12;
+    repeated bytes BytesArray = 13;
+    repeated Object ObjectArray = 14;
+    repeated Array ArrayArray = 15;
+}

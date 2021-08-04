@@ -13,3 +13,6 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+examples/publisher/client/client
+examples/publisher/server/server
+examples/grpc/client/client

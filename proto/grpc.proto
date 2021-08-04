@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+// See https://www.ibm.com/docs/en/zos-basic-skills?topic=layer-transmission-control-protocol-tcp
+package grpc;
+
+option go_package = "transport/grpc/grpcpb";
+
+service Source {
+    rpc Pipe(stream PipeMessage) returns (stream PipeMessage);
+
+}
+
+service Sink {
+    rpc Pipe(stream PipeMessage) returns (stream PipeMessage);
+}
+
+message PipeMessage {
+    uint32 SequenceNumber = 1; 
+    uint32 AcknowledgmentNumber = 2;
+    bytes Data = 3; // TODO probe proto.Any
+}
+
+service RPC {
+    rpc Call(CallRequest) returns (CallResponse);
+}
+
+message CallRequest {
+    bytes Data = 1;
+}
+
+message CallResponse {
+    bytes Data = 1;
+}
