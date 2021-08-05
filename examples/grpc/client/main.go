@@ -18,8 +18,9 @@ func main() {
 	flag.Parse()
 
 	ctx := context.Background()
-	dialer := grpc.NewDialer()
-	socket, err := dialer.Dial(ctx, fmt.Sprintf("%s:%d", *host, *port))
+
+	dialer := grpc.NewDialer(fmt.Sprintf("%s:%d", *host, *port))
+	socket, err := dialer.Dial(ctx)
 	if err != nil {
 		log.Fatalf("dial failed: %v", err)
 	}

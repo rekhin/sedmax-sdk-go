@@ -4,9 +4,9 @@ type Receiver struct {
 	pipe Pipe
 }
 
-func NewReceiver(pipe Pipe) *Receiver {
+func NewReceiver(socket *Socket) *Receiver {
 	return &Receiver{
-		pipe: pipe,
+		// pipe: pipe,
 	}
 }
 

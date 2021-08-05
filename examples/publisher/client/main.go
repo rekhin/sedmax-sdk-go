@@ -22,18 +22,18 @@ func main() {
 	}
 	conn, err := grpc.Dial(fmt.Sprintf("%s:%d", *host, *port), opts...)
 	if err != nil {
-		log.Fatalf("failed to dial: %v", err)
+		log.Fatalf("dial failed: %s", err)
 	}
 	defer func() {
 		if err := conn.Close(); err != nil {
-			log.Fatalf("failed to close: %v", err)
+			log.Fatalf("close failed: %s", err)
 		}
 	}()
 	log.Println(conn.Target()) // TODO
 	sinkClient := grpcpb.NewSinkClient(conn)
 	pipe, err := sinkClient.Pipe(context.Background())
 	if err != nil {
-		log.Fatalf("failed to publish: %v", err)
+		log.Fatalf("publish failed: %s", err)
 	}
 	for {
 		series := &datapb.Series{
@@ -73,7 +73,7 @@ func main() {
 			Data:                 data,
 		}
 		if err := pipe.Send(message); err != nil {
-			log.Fatalf("failed to send %s", err)
+			log.Fatalf("send failed: %s", err)
 		}
 		time.Sleep(time.Second)
 	}

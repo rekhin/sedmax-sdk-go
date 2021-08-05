@@ -6,14 +6,18 @@ import (
 	"google.golang.org/grpc"
 )
 
-type Dialer struct{}
-
-func NewDialer() *Dialer {
-	return &Dialer{}
+type Dialer struct {
+	uri string
 }
 
-func (Dialer) Dial(ctx context.Context, uri string) (*Socket, error) {
-	conn, err := grpc.DialContext(ctx, uri, grpc.WithInsecure())
+func NewDialer(uri string) *Dialer {
+	return &Dialer{
+		uri: uri,
+	}
+}
+
+func (d *Dialer) Dial(ctx context.Context) (*Socket, error) {
+	conn, err := grpc.DialContext(ctx, d.uri, grpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}
