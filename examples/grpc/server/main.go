@@ -21,6 +21,7 @@ func main() {
 
 	listener := grpc.NewListener(fmt.Sprintf("%s:%d", *host, *port))
 	err := listener.Listen(ctx, func(socket *grpc.Socket) {
+		defer socket.Close()
 		receiver := grpc.NewReceiver(socket)
 		for {
 			data, err := receiver.Receive()

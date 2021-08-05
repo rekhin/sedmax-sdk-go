@@ -24,11 +24,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("dial failed: %v", err)
 	}
-	defer func() {
-		if err := socket.Close(); err != nil {
-			log.Fatalf("close failed: %v", err)
-		}
-	}()
+	defer socket.Close()
 	// log.Println(conn.Target()) // TODO
 	sender := grpc.NewSender(socket)
 	for {

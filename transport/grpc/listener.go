@@ -19,47 +19,36 @@ func NewListener(uri string) *Listener {
 	}
 }
 
-func (l *Listener) Listen(ctx context.Context, f func(*Socket)) error {
+func (l *Listener) Listen(ctx context.Context, f func(socket *Socket)) error {
 	listener, err := net.Listen("tcp", l.uri)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	grpcServer := grpc.NewServer()
-	grpcpb.RegisterSinkServer(grpcServer, NewSinkServer(f))
+	grpcpb.RegisterSinkServer(grpcServer, NewSinkServer(ctx, f))
 	grpcServer.Serve(listener)
 	return nil
 }
 
 type SinkServer struct {
 	grpcpb.UnimplementedSinkServer
-
-	f func(*Socket)
+	ctx context.Context
+	f   func(*Socket)
 }
 
-func NewSinkServer(f func(*Socket)) *SinkServer {
+func NewSinkServer(ctx context.Context, f func(*Socket)) *SinkServer {
 	return &SinkServer{
-		f: f,
+		ctx: ctx,
+		f:   f,
 	}
 }
 
 func (s *SinkServer) Pipe(pipe grpcpb.Sink_PipeServer) error {
-	// s.f()
-
-	// for {
-	// 	message, err := pipe.Recv()
-	// 	if err == io.EOF {
-	// 		return nil
-	// 	}
-	// 	if err != nil {
-	// 		return fmt.Errorf("receive failed: %s", err)
-	// 	}
-	// 	series := new(datapb.Series)
-	// 	err = proto.Unmarshal(message.GetData(), series)
-	// 	if err != nil {
-	// 		panic(err)
-	// 	}
-	// 	log.Println(series)
-	// }
-
-	return nil
+	ctx, cancel := context.WithCancel(s.ctx)
+	s.f(&Socket{
+		cancel: cancel,
+		pipe:   pipe,
+	})
+	<-ctx.Done()
+	return ctx.Err()
 }
