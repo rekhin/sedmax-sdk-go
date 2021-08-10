@@ -21,6 +21,7 @@ func main() {
 
 	listener := grpc.NewListener(fmt.Sprintf("%s:%d", *host, *port))
 	err := listener.Listen(ctx, func(socket *grpc.Socket) {
+		// TODO separate socket to Source and Sink. Now socket argument is Source or Sink
 		defer socket.Close()
 		receiver := grpc.NewReceiver(socket)
 		for {
@@ -30,6 +31,7 @@ func main() {
 			}
 			if err != nil {
 				log.Printf("receive failed: %s", err)
+				return
 			}
 			series := new(datapb.Series)
 			err = proto.Unmarshal(data, series)

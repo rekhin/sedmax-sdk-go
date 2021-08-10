@@ -6,7 +6,7 @@ type Receiver struct {
 
 func NewReceiver(socket *Socket) *Receiver {
 	return &Receiver{
-		pipe: socket.pipe,
+		pipe: socket.sourcePipe,
 	}
 }
 

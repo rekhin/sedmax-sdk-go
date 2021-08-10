@@ -10,7 +10,7 @@ type Sender struct {
 
 func NewSender(socket *Socket) *Sender {
 	return &Sender{
-		pipe: socket.pipe,
+		pipe: socket.sourcePipe,
 	}
 }
 
