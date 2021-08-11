@@ -5,23 +5,17 @@ package grpc;
 
 option go_package = "transport/grpc/grpcpb";
 
-service Source {
-    rpc Pipe(stream PipeMessage) returns (stream PipeMessage);
+service Grpc {
+    // TODO выбрать другое название для сокета. Так как это название будет использоваться для передачи данных без проверки потерь
+    rpc Socket(stream SocketMessage) returns (stream SocketMessage);
+    rpc Call(CallRequest) returns (CallResponse);
 
 }
 
-service Sink {
-    rpc Pipe(stream PipeMessage) returns (stream PipeMessage);
-}
-
-message PipeMessage {
+message SocketMessage {
     uint32 SequenceNumber = 1; 
     uint32 AcknowledgmentNumber = 2;
     bytes Data = 3; // TODO probe proto.Any
-}
-
-service RPC {
-    rpc Call(CallRequest) returns (CallResponse);
 }
 
 message CallRequest {

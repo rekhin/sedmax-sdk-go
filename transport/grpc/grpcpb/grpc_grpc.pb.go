@@ -14,324 +14,157 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// SourceClient is the client API for Source service.
+// GrpcClient is the client API for Grpc service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type SourceClient interface {
-	Pipe(ctx context.Context, opts ...grpc.CallOption) (Source_PipeClient, error)
-}
-
-type sourceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewSourceClient(cc grpc.ClientConnInterface) SourceClient {
-	return &sourceClient{cc}
-}
-
-func (c *sourceClient) Pipe(ctx context.Context, opts ...grpc.CallOption) (Source_PipeClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Source_ServiceDesc.Streams[0], "/grpc.Source/Pipe", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &sourcePipeClient{stream}
-	return x, nil
-}
-
-type Source_PipeClient interface {
-	Send(*PipeMessage) error
-	Recv() (*PipeMessage, error)
-	grpc.ClientStream
-}
-
-type sourcePipeClient struct {
-	grpc.ClientStream
-}
-
-func (x *sourcePipeClient) Send(m *PipeMessage) error {
-	return x.ClientStream.SendMsg(m)
-}
-
-func (x *sourcePipeClient) Recv() (*PipeMessage, error) {
-	m := new(PipeMessage)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-// SourceServer is the server API for Source service.
-// All implementations must embed UnimplementedSourceServer
-// for forward compatibility
-type SourceServer interface {
-	Pipe(Source_PipeServer) error
-	mustEmbedUnimplementedSourceServer()
-}
-
-// UnimplementedSourceServer must be embedded to have forward compatible implementations.
-type UnimplementedSourceServer struct {
-}
-
-func (UnimplementedSourceServer) Pipe(Source_PipeServer) error {
-	return status.Errorf(codes.Unimplemented, "method Pipe not implemented")
-}
-func (UnimplementedSourceServer) mustEmbedUnimplementedSourceServer() {}
-
-// UnsafeSourceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to SourceServer will
-// result in compilation errors.
-type UnsafeSourceServer interface {
-	mustEmbedUnimplementedSourceServer()
-}
-
-func RegisterSourceServer(s grpc.ServiceRegistrar, srv SourceServer) {
-	s.RegisterService(&Source_ServiceDesc, srv)
-}
-
-func _Source_Pipe_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(SourceServer).Pipe(&sourcePipeServer{stream})
-}
-
-type Source_PipeServer interface {
-	Send(*PipeMessage) error
-	Recv() (*PipeMessage, error)
-	grpc.ServerStream
-}
-
-type sourcePipeServer struct {
-	grpc.ServerStream
-}
-
-func (x *sourcePipeServer) Send(m *PipeMessage) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func (x *sourcePipeServer) Recv() (*PipeMessage, error) {
-	m := new(PipeMessage)
-	if err := x.ServerStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-// Source_ServiceDesc is the grpc.ServiceDesc for Source service.
-// It's only intended for direct use with grpc.RegisterService,
-// and not to be introspected or modified (even as a copy)
-var Source_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "grpc.Source",
-	HandlerType: (*SourceServer)(nil),
-	Methods:     []grpc.MethodDesc{},
-	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "Pipe",
-			Handler:       _Source_Pipe_Handler,
-			ServerStreams: true,
-			ClientStreams: true,
-		},
-	},
-	Metadata: "proto/grpc.proto",
-}
-
-// SinkClient is the client API for Sink service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type SinkClient interface {
-	Pipe(ctx context.Context, opts ...grpc.CallOption) (Sink_PipeClient, error)
-}
-
-type sinkClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewSinkClient(cc grpc.ClientConnInterface) SinkClient {
-	return &sinkClient{cc}
-}
-
-func (c *sinkClient) Pipe(ctx context.Context, opts ...grpc.CallOption) (Sink_PipeClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Sink_ServiceDesc.Streams[0], "/grpc.Sink/Pipe", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &sinkPipeClient{stream}
-	return x, nil
-}
-
-type Sink_PipeClient interface {
-	Send(*PipeMessage) error
-	Recv() (*PipeMessage, error)
-	grpc.ClientStream
-}
-
-type sinkPipeClient struct {
-	grpc.ClientStream
-}
-
-func (x *sinkPipeClient) Send(m *PipeMessage) error {
-	return x.ClientStream.SendMsg(m)
-}
-
-func (x *sinkPipeClient) Recv() (*PipeMessage, error) {
-	m := new(PipeMessage)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-// SinkServer is the server API for Sink service.
-// All implementations must embed UnimplementedSinkServer
-// for forward compatibility
-type SinkServer interface {
-	Pipe(Sink_PipeServer) error
-	mustEmbedUnimplementedSinkServer()
-}
-
-// UnimplementedSinkServer must be embedded to have forward compatible implementations.
-type UnimplementedSinkServer struct {
-}
-
-func (UnimplementedSinkServer) Pipe(Sink_PipeServer) error {
-	return status.Errorf(codes.Unimplemented, "method Pipe not implemented")
-}
-func (UnimplementedSinkServer) mustEmbedUnimplementedSinkServer() {}
-
-// UnsafeSinkServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to SinkServer will
-// result in compilation errors.
-type UnsafeSinkServer interface {
-	mustEmbedUnimplementedSinkServer()
-}
-
-func RegisterSinkServer(s grpc.ServiceRegistrar, srv SinkServer) {
-	s.RegisterService(&Sink_ServiceDesc, srv)
-}
-
-func _Sink_Pipe_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(SinkServer).Pipe(&sinkPipeServer{stream})
-}
-
-type Sink_PipeServer interface {
-	Send(*PipeMessage) error
-	Recv() (*PipeMessage, error)
-	grpc.ServerStream
-}
-
-type sinkPipeServer struct {
-	grpc.ServerStream
-}
-
-func (x *sinkPipeServer) Send(m *PipeMessage) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func (x *sinkPipeServer) Recv() (*PipeMessage, error) {
-	m := new(PipeMessage)
-	if err := x.ServerStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-// Sink_ServiceDesc is the grpc.ServiceDesc for Sink service.
-// It's only intended for direct use with grpc.RegisterService,
-// and not to be introspected or modified (even as a copy)
-var Sink_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "grpc.Sink",
-	HandlerType: (*SinkServer)(nil),
-	Methods:     []grpc.MethodDesc{},
-	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "Pipe",
-			Handler:       _Sink_Pipe_Handler,
-			ServerStreams: true,
-			ClientStreams: true,
-		},
-	},
-	Metadata: "proto/grpc.proto",
-}
-
-// RPCClient is the client API for RPC service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type RPCClient interface {
+type GrpcClient interface {
+	Socket(ctx context.Context, opts ...grpc.CallOption) (Grpc_SocketClient, error)
 	Call(ctx context.Context, in *CallRequest, opts ...grpc.CallOption) (*CallResponse, error)
 }
 
-type rPCClient struct {
+type grpcClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewRPCClient(cc grpc.ClientConnInterface) RPCClient {
-	return &rPCClient{cc}
+func NewGrpcClient(cc grpc.ClientConnInterface) GrpcClient {
+	return &grpcClient{cc}
 }
 
-func (c *rPCClient) Call(ctx context.Context, in *CallRequest, opts ...grpc.CallOption) (*CallResponse, error) {
+func (c *grpcClient) Socket(ctx context.Context, opts ...grpc.CallOption) (Grpc_SocketClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Grpc_ServiceDesc.Streams[0], "/grpc.Grpc/Socket", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpcSocketClient{stream}
+	return x, nil
+}
+
+type Grpc_SocketClient interface {
+	Send(*SocketMessage) error
+	Recv() (*SocketMessage, error)
+	grpc.ClientStream
+}
+
+type grpcSocketClient struct {
+	grpc.ClientStream
+}
+
+func (x *grpcSocketClient) Send(m *SocketMessage) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *grpcSocketClient) Recv() (*SocketMessage, error) {
+	m := new(SocketMessage)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *grpcClient) Call(ctx context.Context, in *CallRequest, opts ...grpc.CallOption) (*CallResponse, error) {
 	out := new(CallResponse)
-	err := c.cc.Invoke(ctx, "/grpc.RPC/Call", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/grpc.Grpc/Call", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// RPCServer is the server API for RPC service.
-// All implementations must embed UnimplementedRPCServer
+// GrpcServer is the server API for Grpc service.
+// All implementations must embed UnimplementedGrpcServer
 // for forward compatibility
-type RPCServer interface {
+type GrpcServer interface {
+	Socket(Grpc_SocketServer) error
 	Call(context.Context, *CallRequest) (*CallResponse, error)
-	mustEmbedUnimplementedRPCServer()
+	mustEmbedUnimplementedGrpcServer()
 }
 
-// UnimplementedRPCServer must be embedded to have forward compatible implementations.
-type UnimplementedRPCServer struct {
+// UnimplementedGrpcServer must be embedded to have forward compatible implementations.
+type UnimplementedGrpcServer struct {
 }
 
-func (UnimplementedRPCServer) Call(context.Context, *CallRequest) (*CallResponse, error) {
+func (UnimplementedGrpcServer) Socket(Grpc_SocketServer) error {
+	return status.Errorf(codes.Unimplemented, "method Socket not implemented")
+}
+func (UnimplementedGrpcServer) Call(context.Context, *CallRequest) (*CallResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Call not implemented")
 }
-func (UnimplementedRPCServer) mustEmbedUnimplementedRPCServer() {}
+func (UnimplementedGrpcServer) mustEmbedUnimplementedGrpcServer() {}
 
-// UnsafeRPCServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to RPCServer will
+// UnsafeGrpcServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to GrpcServer will
 // result in compilation errors.
-type UnsafeRPCServer interface {
-	mustEmbedUnimplementedRPCServer()
+type UnsafeGrpcServer interface {
+	mustEmbedUnimplementedGrpcServer()
 }
 
-func RegisterRPCServer(s grpc.ServiceRegistrar, srv RPCServer) {
-	s.RegisterService(&RPC_ServiceDesc, srv)
+func RegisterGrpcServer(s grpc.ServiceRegistrar, srv GrpcServer) {
+	s.RegisterService(&Grpc_ServiceDesc, srv)
 }
 
-func _RPC_Call_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Grpc_Socket_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(GrpcServer).Socket(&grpcSocketServer{stream})
+}
+
+type Grpc_SocketServer interface {
+	Send(*SocketMessage) error
+	Recv() (*SocketMessage, error)
+	grpc.ServerStream
+}
+
+type grpcSocketServer struct {
+	grpc.ServerStream
+}
+
+func (x *grpcSocketServer) Send(m *SocketMessage) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *grpcSocketServer) Recv() (*SocketMessage, error) {
+	m := new(SocketMessage)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func _Grpc_Call_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CallRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RPCServer).Call(ctx, in)
+		return srv.(GrpcServer).Call(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/grpc.RPC/Call",
+		FullMethod: "/grpc.Grpc/Call",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RPCServer).Call(ctx, req.(*CallRequest))
+		return srv.(GrpcServer).Call(ctx, req.(*CallRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// RPC_ServiceDesc is the grpc.ServiceDesc for RPC service.
+// Grpc_ServiceDesc is the grpc.ServiceDesc for Grpc service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var RPC_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "grpc.RPC",
-	HandlerType: (*RPCServer)(nil),
+var Grpc_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "grpc.Grpc",
+	HandlerType: (*GrpcServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "Call",
-			Handler:    _RPC_Call_Handler,
+			Handler:    _Grpc_Call_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "Socket",
+			Handler:       _Grpc_Socket_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+	},
 	Metadata: "proto/grpc.proto",
 }

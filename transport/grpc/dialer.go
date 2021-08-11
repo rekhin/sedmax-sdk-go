@@ -27,15 +27,10 @@ func (d *Dialer) Dial(ctx context.Context) (*Socket, error) {
 	if err != nil {
 		return nil, err
 	}
-	sourceClient := grpcpb.NewSourceClient(conn)
-	sourcePipe, err := sourceClient.Pipe(ctx)
+	client := grpcpb.NewGrpcClient(conn)
+	socket, err := client.Socket(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("create pipe failed: %s", err)
-	}
-	sinkClient := grpcpb.NewSinkClient(conn)
-	sinkPipe, err := sinkClient.Pipe(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("create pipe failed: %s", err)
+		return nil, fmt.Errorf("create socket failed: %s", err)
 	}
 	ctx, cancel := context.WithCancel(ctx)
 	go func() {
@@ -45,8 +40,7 @@ func (d *Dialer) Dial(ctx context.Context) (*Socket, error) {
 		}
 	}()
 	return &Socket{
-		cancel:     cancel,
-		sourcePipe: sourcePipe,
-		sinkPipe:   sinkPipe,
+		cancel: cancel,
+		socket: socket,
 	}, nil
 }

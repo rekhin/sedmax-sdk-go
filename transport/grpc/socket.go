@@ -7,14 +7,13 @@ import (
 )
 
 type Socket struct {
-	cancel     context.CancelFunc
-	sourcePipe Pipe
-	sinkPipe   Pipe
+	cancel context.CancelFunc
+	socket grpcSocket
 }
 
-type Pipe interface {
-	Send(*grpcpb.PipeMessage) error
-	Recv() (*grpcpb.PipeMessage, error)
+type grpcSocket interface {
+	Send(*grpcpb.SocketMessage) error
+	Recv() (*grpcpb.SocketMessage, error)
 }
 
 func (s *Socket) Close() {

@@ -1,17 +1,17 @@
 package grpc
 
 type Receiver struct {
-	pipe Pipe
+	socket grpcSocket
 }
 
 func NewReceiver(socket *Socket) *Receiver {
 	return &Receiver{
-		pipe: socket.sourcePipe,
+		socket: socket.socket,
 	}
 }
 
 func (s *Receiver) Receive() ([]byte, error) {
-	message, err := s.pipe.Recv()
+	message, err := s.socket.Recv()
 	if err != nil {
 		return nil, err
 	}
