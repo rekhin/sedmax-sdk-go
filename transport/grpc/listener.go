@@ -54,25 +54,25 @@ func (s *SourceServer) Pipe(sourcePipe grpcpb.Source_PipeServer) error {
 	return ctx.Err()
 }
 
-// type SinkServer struct {
-// 	grpcpb.UnimplementedSinkServer
-// 	ctx context.Context
-// 	f   func(*Socket)
-// }
+type SinkServer struct {
+	grpcpb.UnimplementedSinkServer
+	ctx context.Context
+	f   func(*Socket)
+}
 
-// func NewSinkServer(ctx context.Context, f func(*Socket)) *SinkServer {
-// 	return &SinkServer{
-// 		ctx: ctx,
-// 		f:   f,
-// 	}
-// }
+func NewSinkServer(ctx context.Context, f func(*Socket)) *SinkServer {
+	return &SinkServer{
+		ctx: ctx,
+		f:   f,
+	}
+}
 
-// func (s *SinkServer) Pipe(sinkPipe grpcpb.Sink_PipeServer) error {
-// 	ctx, cancel := context.WithCancel(s.ctx)
-// 	s.f(&Socket{
-// 		cancel:   cancel,
-// 		sinkPipe: sinkPipe,
-// 	})
-// 	<-ctx.Done()
-// 	return ctx.Err()
-// }
+func (s *SinkServer) Pipe(sinkPipe grpcpb.Sink_PipeServer) error {
+	ctx, cancel := context.WithCancel(s.ctx)
+	s.f(&Socket{
+		cancel:   cancel,
+		sinkPipe: sinkPipe,
+	})
+	<-ctx.Done()
+	return ctx.Err()
+}

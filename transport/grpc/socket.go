@@ -9,7 +9,7 @@ import (
 type Socket struct {
 	cancel     context.CancelFunc
 	sourcePipe Pipe
-	// sinkPipe   Pipe
+	sinkPipe   Pipe
 }
 
 type Pipe interface {

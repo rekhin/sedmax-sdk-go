@@ -16,3 +16,4 @@
 examples/publisher/client/client
 examples/publisher/server/server
 examples/grpc/client/client
+examples/grpc/server/server
